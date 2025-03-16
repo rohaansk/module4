@@ -6,6 +6,15 @@ from datetime import datetime
 # Set page config for wide layout
 st.set_page_config(page_title="SuperStore KPI Dashboard", layout="wide")
 
+st.markdown("""
+    <style>
+        body { font-family: Arial, sans-serif; }
+        h1, h2, h3, h4, h5, h6 { font-family: 'Roboto', sans-serif; color: #333; }
+        .stRadio > label { font-size: 16px; font-weight: bold; }
+        .stMetric > div { font-size: 18px; font-weight: bold; }
+    </style>
+""", unsafe_allow_html=True)
+
 # ---- Load Data ----
 @st.cache_data
 def load_data():
@@ -81,7 +90,7 @@ if not df_filtered.empty:
         fig_line = px.line(df_grouped, x="Order Date", y=selected_kpi, title=f"{selected_kpi} Over Time",
                            labels={"Order Date": "Date", selected_kpi: selected_kpi}, template="plotly_white",
                            hover_data={"Order Date": "|%B %d, %Y", selected_kpi: ":.2f"})
-        fig_line.update_layout(height=400)
+        fig_line.update_layout(height=300)
         st.plotly_chart(fig_line, use_container_width=True)
     
     top_products = df_filtered.groupby("Product Name").agg({"Sales": "sum", "Quantity": "sum", "Profit": "sum"}).reset_index()
@@ -92,7 +101,7 @@ if not df_filtered.empty:
         fig_bar = px.bar(top_products, x=selected_kpi, y="Product Name", orientation="h", 
                          title=f"Top 10 Products by {selected_kpi}", color=selected_kpi,
                          color_continuous_scale="Blues", template="plotly_white")
-        fig_bar.update_layout(height=400, yaxis={"categoryorder": "total ascending"})
+        fig_bar.update_layout(height=300, yaxis={"categoryorder": "total ascending"})
         st.plotly_chart(fig_bar, use_container_width=True)
 
 st.success("Dashboard updated with best practices! 🚀")
