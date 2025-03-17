@@ -110,8 +110,9 @@ if not df_filtered.empty:
     with col2:
         fig_bar = px.bar(top_products, x=selected_kpi, y="Short Name", orientation="h", 
                          title=f"Top 10 Products by {selected_kpi}", color=selected_kpi,
-                         color_continuous_scale="Blues", template="plotly_white")
-        fig_bar.update_traces(text=top_products["Product Name"], textposition="outside")
+                         color_continuous_scale="Blues", template="plotly_white",
+                         custom_data=[top_products["Product Name"], top_products["Sales"]])
+        fig_bar.update_traces(hovertemplate="<b>%{customdata[0]}</b><br>Sales: $%{customdata[1]:,.2f}")
         fig_bar.update_layout(height=300, yaxis={"categoryorder": "total ascending"})
         st.plotly_chart(fig_bar, use_container_width=True)
         
