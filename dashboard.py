@@ -74,12 +74,13 @@ if page == "📊 Business Overview":
 
     
     col1, col2 = st.columns(2)
-with col1:
-    st.metric(label="Total Sales", value=f"${total_sales:,.2f}")
-    st.metric(label="Total Profit", value=f"${total_profit:,.2f}")
-with col2:
-    st.metric(label="Margin Rate", value=f"{(margin_rate * 100):,.2f}%")
-    st.metric(label="Total Quantity Sold", value=f"{total_quantity:,}")
+    with col1:
+        st.metric(label="Total Sales", value=f"${total_sales:,.2f}")
+        st.metric(label="Total Profit", value=f"${total_profit:,.2f}")
+    with col2:
+        st.metric(label="Margin Rate", value=f"{(margin_rate * 100):,.2f}%")
+        st.metric(label="Total Quantity Sold", value=f"{total_quantity:,}")
+
 
     
     # ---- Treemap Visualization ----
