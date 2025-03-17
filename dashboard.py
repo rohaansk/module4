@@ -95,14 +95,15 @@ if not df_filtered.empty:
     
     top_products = df_filtered.groupby("Product Name").agg({"Sales": "sum", "Quantity": "sum", "Profit": "sum"}).reset_index()
     top_products["Margin Rate"] = top_products["Profit"] / top_products["Sales"].replace(0, 1)
-    top_10_products = top_products.sort_values(by=selected_kpi, ascending=False).head(10)
+    top_products["Short Name"] = top_products["Product Name"].str[:15] + "..."
+    top_products = top_products.sort_values(by=selected_kpi, ascending=False).head(10)
     
     with col2:
-        fig_bar = px.bar(top_10_products, x=selected_kpi, y=top_10_products.index, orientation="h", 
+        fig_bar = px.bar(top_products, x=selected_kpi, y="Short Name", orientation="h", 
                          title=f"Top 10 Products by {selected_kpi}", color=selected_kpi,
                          color_continuous_scale="Blues", template="plotly_white",
                          hover_name="Product Name")
-        fig_bar.update_layout(height=300, yaxis={"categoryorder": "total ascending", "showticklabels": False, "ticks": ""})
+        fig_bar.update_layout(height=300, yaxis={"categoryorder": "total ascending"})
         st.plotly_chart(fig_bar, use_container_width=True)
 
 st.success("Dashboard updated with best practices! 🚀")
