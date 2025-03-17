@@ -99,7 +99,7 @@ if not df_filtered.empty:
     
     with col2:
         fig_bar = px.bar(top_products, x=selected_kpi, y="Product Name", orientation="h", 
-                         title=f"Top 10 Products by {selected_kpi}", color=selected_kpi,
+                         title=f"Top 11 Products by {selected_kpi}", color=selected_kpi,
                          color_continuous_scale="Blues", template="plotly_white")
         fig_bar.update_layout(height=300, yaxis={"categoryorder": "total ascending"})
         st.plotly_chart(fig_bar, use_container_width=True)
