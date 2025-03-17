@@ -137,30 +137,30 @@ elif page == "📈 Advanced Analytics":
     st.plotly_chart(fig_scatter, use_container_width=True)
     
    # ---- KPI Trend Over Time ----
-st.subheader("KPI Trend Over Time")
-kpi_options = ["Sales", "Quantity", "Profit", "Margin Rate"]
-selected_kpi = st.radio("Select KPI to visualize:", options=kpi_options, horizontal=True)
+    st.subheader("KPI Trend Over Time")
+    kpi_options = ["Sales", "Quantity", "Profit", "Margin Rate"]
+    selected_kpi = st.radio("Select KPI to visualize:", options=kpi_options, horizontal=True)
 
-df_grouped = df_filtered.groupby("Order Date").agg({"Sales": "sum", "Quantity": "sum", "Profit": "sum"}).reset_index()
-df_grouped["Margin Rate"] = df_grouped["Profit"] / df_grouped["Sales"].replace(0, 1)
-df_grouped["Order Date"] = pd.to_datetime(df_grouped["Order Date"])  # Ensure datetime format
-df_grouped["Formatted Date"] = df_grouped["Order Date"].dt.strftime("%B %d, %Y")  # Format for hover tooltip
+    df_grouped = df_filtered.groupby("Order Date").agg({"Sales": "sum", "Quantity": "sum", "Profit": "sum"}).reset_index()
+    df_grouped["Margin Rate"] = df_grouped["Profit"] / df_grouped["Sales"].replace(0, 1)
+    df_grouped["Order Date"] = pd.to_datetime(df_grouped["Order Date"])  # Ensure datetime format
+    df_grouped["Formatted Date"] = df_grouped["Order Date"].dt.strftime("%B %d, %Y")  # Format for hover tooltip
 
-fig_line = px.line(df_grouped, x="Order Date", y=selected_kpi, title=f"{selected_kpi} Over Time",
+    fig_line = px.line(df_grouped, x="Order Date", y=selected_kpi, title=f"{selected_kpi} Over Time",
                    labels={"Order Date": "Date", selected_kpi: selected_kpi}, template="plotly_white",
                    custom_data=["Formatted Date", selected_kpi])
 
 # Reduce number of x-axis labels by setting tick mode
-fig_line.update_layout(xaxis=dict(
-    tickmode="auto",  # Automatically space ticks
-    tickangle=-45,  # Rotate labels for better readability
-    nticks=6  # Control number of labels shown (Adjust if needed)
-))
+    fig_line.update_layout(xaxis=dict(
+        tickmode="auto",  # Automatically space ticks
+        tickangle=-45,  # Rotate labels for better readability
+        nticks=6  # Control number of labels shown (Adjust if needed)
+    ))
 
-fig_line.update_traces(hovertemplate="<b>Date:</b> %{customdata[0]}<br>"
+    fig_line.update_traces(hovertemplate="<b>Date:</b> %{customdata[0]}<br>"
                                      f"<b>{selected_kpi}:</b> $%{{customdata[1]:,.2f}}")
 
-st.plotly_chart(fig_line, use_container_width=True)
+    st.plotly_chart(fig_line, use_container_width=True)
 
 
 
