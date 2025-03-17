@@ -98,18 +98,11 @@ if not df_filtered.empty:
     top_5_products = top_products.sort_values(by=selected_kpi, ascending=False).head(5)
     
     with col2:
-        fig_bar = px.bar(top_5_products, x=selected_kpi, y="Product Name", orientation="h", 
+        fig_bar = px.bar(top_5_products, x=selected_kpi, y=top_5_products.index, orientation="h", 
                          title=f"Top 5 Products by {selected_kpi}", color=selected_kpi,
-                         color_continuous_scale="Blues", template="plotly_white")
-        fig_bar.update_layout(height=300, yaxis={"categoryorder": "total ascending"})
+                         color_continuous_scale="Blues", template="plotly_white",
+                         hover_name="Product Name")
+        fig_bar.update_layout(height=300, yaxis={"categoryorder": "total ascending", "showticklabels": False, "ticks": ""})
         st.plotly_chart(fig_bar, use_container_width=True)
-    
-    if st.button("Download Top 10 Products Chart"):
-        fig_top_10 = px.bar(top_products.sort_values(by=selected_kpi, ascending=False).head(10), x=selected_kpi, y="Product Name", orientation="h", 
-                            title=f"Top 10 Products by {selected_kpi}", color=selected_kpi,
-                            color_continuous_scale="Blues", template="plotly_white")
-        fig_top_10.update_layout(height=400, yaxis={"categoryorder": "total ascending"})
-        fig_top_10.write_image("top_10_products_chart.png")
-        st.download_button(label="Download Chart", data=open("top_10_products_chart.png", "rb").read(), file_name="top_10_products_chart.png", mime="image/png")
 
 st.success("Dashboard updated with best practices! 🚀")
