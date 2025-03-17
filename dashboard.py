@@ -33,8 +33,12 @@ page = st.sidebar.radio("Go to:", ["📊 Business Overview", "📈 Advanced Anal
 
 # ---- Sidebar Filters ----
 def multiselect_with_all(label, options, default_options):
-    all_selected = "All" in default_options or set(options) == set(default_options)
-    selected_options = st.sidebar.multiselect(label, ["All"] + options, default=["All"] if all_selected else default_options)
+    selected_options = st.sidebar.multiselect(label, ["All"] + options, default=["All"] if set(default_options) == set(options) else default_options)
+    if "All" in selected_options and len(selected_options) > 1:
+        selected_options.remove("All")
+    if not selected_options:
+        st.sidebar.warning(f"At least one {label.lower()} must be selected.")
+        selected_options = options
     return options if "All" in selected_options else selected_options
 
 st.sidebar.title("Filters")
@@ -52,9 +56,6 @@ df_filtered = df_filtered[df_filtered["Sub-Category"].isin(selected_subcategorie
 
 selected_products = multiselect_with_all("Select Product(s)", sorted(df_filtered["Product Name"].dropna().unique()), df_filtered["Product Name"].unique())
 df_filtered = df_filtered[df_filtered["Product Name"].isin(selected_products)]
-
-if len(selected_regions) == 0 or len(selected_states) == 0 or len(selected_categories) == 0 or len(selected_subcategories) == 0 or len(selected_products) == 0:
-    st.sidebar.error("At least one option must be selected for each filter.")
 
 min_date, max_date = df_filtered["Order Date"].min(), df_filtered["Order Date"].max()
 from_date = st.sidebar.date_input("From Date", value=min_date, min_value=min_date, max_value=max_date)
