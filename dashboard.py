@@ -93,6 +93,12 @@ if page == "📊 Business Overview":
     fig_bar = px.bar(top_products, x="Sales", y="Short Name", orientation="h", color="Sales", title="Top Products", color_continuous_scale="Blues")
     fig_bar.update_layout(yaxis={"categoryorder": "total ascending"})
     st.plotly_chart(fig_bar, use_container_width=True)
+    
+    # ---- Sales Performance by Location ----
+    st.subheader("Sales Performance by Location")
+    location_fig = px.bar(df_filtered.groupby("State").agg({"Sales": "sum"}).reset_index(), x="Sales", y="State", orientation="h", title="Sales by State", color="Sales", color_continuous_scale="Blues")
+    location_fig.update_layout(yaxis={"categoryorder": "total ascending"})
+    st.plotly_chart(location_fig, use_container_width=True)
 
 elif page == "📈 Advanced Analytics":
     st.title("📈 Advanced Analytics")
