@@ -12,15 +12,6 @@ st.markdown("""
         h1, h2, h3, h4, h5, h6 { font-family: 'Roboto', sans-serif; color: #333; }
         .stRadio > label { font-size: 16px; font-weight: bold; }
         .stMetric > div { font-size: 18px; font-weight: bold; }
-        .plotly-tooltip {
-            background-color: #2c3e50;
-            color: white;
-            font-size: 14px;
-            padding: 8px;
-            border-radius: 5px;
-            width: 200px;
-            white-space: normal;
-        }
     </style>
 """, unsafe_allow_html=True)
 
@@ -118,7 +109,7 @@ if not df_filtered.empty:
                          title=f"Top 5 Products by {selected_kpi}", color=selected_kpi,
                          color_continuous_scale="Blues", template="plotly_white",
                          custom_data=[top_products["Product Name"], top_products["Sales"]])
-        fig_bar.update_traces(hovertemplate="<div class='plotly-tooltip'><b>%{customdata[0]}</b><br>Sales: $%{customdata[1]:,.2f}</div>")
+        fig_bar.update_traces(hovertemplate="<b>%{customdata[0]}</b><br>Sales: $%{customdata[1]:,.2f}")
         fig_bar.update_layout(height=300, yaxis={"categoryorder": "total ascending"})
         st.plotly_chart(fig_bar, use_container_width=True)
 
