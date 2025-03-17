@@ -13,6 +13,7 @@ st.markdown("""
         .stRadio > label { font-size: 16px; font-weight: bold; }
         .stMetric > div { font-size: 18px; font-weight: bold; }
         .stMultiSelect div[data-baseweb="tag"] { display: none; }
+        .stMultiSelect div[data-baseweb="select"] > div { height: auto !important; }
     </style>
 """, unsafe_allow_html=True)
 
