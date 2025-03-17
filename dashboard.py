@@ -58,7 +58,7 @@ if from_date > to_date:
 df_filtered = df_filtered[(df_filtered["Order Date"] >= pd.to_datetime(from_date)) & (df_filtered["Order Date"] <= pd.to_datetime(to_date))]
 
 # ---- KPI Calculation ----
-kpi_prev_sales = 0
+previous_sales = df_original["Sales"].sum() - total_sales if not df_original.empty else 0
 total_sales = df_filtered["Sales"].sum() if not df_filtered.empty else 0
 total_quantity = df_filtered["Quantity"].sum() if not df_filtered.empty else 0
 total_profit = df_filtered["Profit"].sum() if not df_filtered.empty else 0
@@ -69,7 +69,7 @@ st.title("Enhanced SuperStore KPI Dashboard")
 # ---- KPI Display with Percentage Change ----
 kpi_col1, kpi_col2, kpi_col3, kpi_col4 = st.columns(4)
 with kpi_col1:
-    st.metric(label="Total Sales", value=f"${total_sales:,.2f}", delta=f"${total_sales - kpi_prev_sales:,.2f}")
+    st.metric(label="Total Sales", value=f"${total_sales:,.2f}", delta=f"${total_sales - previous_sales:,.2f}")
 with kpi_col2:
     st.metric(label="Total Quantity Sold", value=f"{total_quantity:,.0f}")
 with kpi_col3:
@@ -81,6 +81,9 @@ with kpi_col4:
 if not df_filtered.empty:
     df_grouped = df_filtered.groupby("Order Date").agg({"Sales": "sum", "Quantity": "sum", "Profit": "sum"}).reset_index()
     df_grouped["Margin Rate"] = df_grouped["Profit"] / df_grouped["Sales"].replace(0, 1)
+    
+    top_product = df_filtered.groupby("Product Name")["Quantity"].sum().idxmax()
+    st.subheader(f"Best Selling Product: {top_product}")
     
     kpi_options = ["Sales", "Quantity", "Profit", "Margin Rate"]
     selected_kpi = st.radio("Select KPI to visualize:", options=kpi_options, horizontal=True)
@@ -98,10 +101,11 @@ if not df_filtered.empty:
     top_products = top_products.sort_values(by=selected_kpi, ascending=False).head(10)
     
     with col2:
-        fig_bar = px.bar(top_products, x=selected_kpi, y="Product Name", orientation="h", 
+        fig_bar = px.bar(top_products, x=selected_kpi, y=top_products.index, orientation="h", 
                          title=f"Top 10 Products by {selected_kpi}", color=selected_kpi,
-                         color_continuous_scale="Blues", template="plotly_white")
-        fig_bar.update_layout(height=300, yaxis={"categoryorder": "total ascending"})
+                         color_continuous_scale="Blues", template="plotly_white",
+                         hover_name="Product Name")
+        fig_bar.update_layout(height=300, yaxis={"categoryorder": "total ascending", "showticklabels": False})
         st.plotly_chart(fig_bar, use_container_width=True)
 
 st.success("Dashboard updated with best practices! 🚀")
