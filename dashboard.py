@@ -95,11 +95,11 @@ if not df_filtered.empty:
     
     top_products = df_filtered.groupby("Product Name").agg({"Sales": "sum", "Quantity": "sum", "Profit": "sum"}).reset_index()
     top_products["Margin Rate"] = top_products["Profit"] / top_products["Sales"].replace(0, 1)
-    top_5_products = top_products.sort_values(by=selected_kpi, ascending=False).head(5)
+    top_10_products = top_products.sort_values(by=selected_kpi, ascending=False).head(10)
     
     with col2:
-        fig_bar = px.bar(top_5_products, x=selected_kpi, y=top_5_products.index, orientation="h", 
-                         title=f"Top 5 Products by {selected_kpi}", color=selected_kpi,
+        fig_bar = px.bar(top_10_products, x=selected_kpi, y=top_10_products.index, orientation="h", 
+                         title=f"Top 10 Products by {selected_kpi}", color=selected_kpi,
                          color_continuous_scale="Blues", template="plotly_white",
                          hover_name="Product Name")
         fig_bar.update_layout(height=300, yaxis={"categoryorder": "total ascending", "showticklabels": False, "ticks": ""})
