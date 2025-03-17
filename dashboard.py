@@ -89,7 +89,7 @@ if not df_filtered.empty:
     kpi_options = ["Sales", "Quantity", "Profit", "Margin Rate"]
     selected_kpi = st.radio("Select KPI to visualize:", options=kpi_options, horizontal=True)
     
-    col1, empty_col, col2 = st.columns([0.8, 0.2, 1])  # Adds space between charts
+    col1, empty_col, col2 = st.columns([0.9, 0.1, 1])  # Adds space between charts
     with col1:
         fig_line = px.line(df_grouped, x="Order Date", y=selected_kpi, title=f"{selected_kpi} Over Time",
                            labels={"Order Date": "Date", selected_kpi: selected_kpi}, template="plotly_white",
