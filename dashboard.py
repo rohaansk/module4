@@ -84,9 +84,15 @@ if page == "📊 Business Overview":
 
     
     # ---- Treemap Visualization ----
+    # ---- Treemap Tooltip Update ----
     st.subheader("Sales Breakdown by Category & Sub-Category")
-    treemap_fig = px.treemap(df_filtered, path=["Category", "Sub-Category"], values="Sales", title="Category Sales Breakdown")
+    treemap_fig = px.treemap(df_filtered, path=["Category", "Sub-Category"], values="Sales", title="Category Sales Breakdown",
+                         custom_data=["Category", "Sub-Category", "Sales"])
+    treemap_fig.update_traces(hovertemplate="<b>Category:</b> %{customdata[0]}<br>"
+                                        "<b>Sub-Category:</b> %{customdata[1]}<br>"
+                                        "<b>Sales:</b> $%{customdata[2]:,.2f}")
     st.plotly_chart(treemap_fig, use_container_width=True)
+
     
     # ---- Top Products ----
     top_products = df_filtered.groupby("Product Name").agg({"Sales": "sum"}).reset_index()
