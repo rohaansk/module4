@@ -89,7 +89,7 @@ if not df_filtered.empty:
     kpi_options = ["Sales", "Quantity", "Profit", "Margin Rate"]
     selected_kpi = st.radio("Select KPI to visualize:", options=kpi_options, horizontal=True)
     
-    col1, empty_col, col2 = st.columns([0.9, 0.1, 1])  # Adds space between charts
+    col1, empty_col, col2 = st.columns([0.8, 0.2, 1])  # Adds space between charts
     with col1:
         fig_line = px.line(df_grouped, x="Order Date", y=selected_kpi, title=f"{selected_kpi} Over Time",
                            labels={"Order Date": "Date", selected_kpi: selected_kpi}, template="plotly_white",
@@ -106,15 +106,17 @@ if not df_filtered.empty:
     top_products["Short Name"] = top_products["Product Name"].str[:15] + "..."
     
     highest_selling_product = top_products.iloc[0]["Product Name"]
+    lowest_selling_product = top_products.iloc[-1]["Product Name"]
     
     with col2:
         fig_bar = px.bar(top_products, x=selected_kpi, y="Short Name", orientation="h", 
                          title=f"Top 10 Products by {selected_kpi}", color=selected_kpi,
                          color_continuous_scale="Blues", template="plotly_white",
-                         hover_data={"Short Name": False, "Product Name": True})
+                         hover_data={"Short Name": True, "Product Name": True})
         fig_bar.update_layout(height=300, yaxis={"categoryorder": "total ascending", "tickmode": "array", "tickvals": list(range(10))})
         st.plotly_chart(fig_bar, use_container_width=True)
         
         st.caption(f"🏆 Highest Selling Product: {highest_selling_product}")
+        st.caption(f"📉 Lowest Selling Product: {lowest_selling_product}")
 
 st.success("Dashboard updated with best practices! 🚀")
