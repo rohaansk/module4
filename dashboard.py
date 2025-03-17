@@ -70,14 +70,17 @@ if page == "📊 Business Overview":
     total_sales = df_filtered["Sales"].sum() if not df_filtered.empty else 0
     total_profit = df_filtered["Profit"].sum() if not df_filtered.empty else 0
     margin_rate = (total_profit / total_sales) if total_sales != 0 else 0
+    total_quantity = df_filtered["Quantity"].sum() if not df_filtered.empty else 0
+
     
-    # ---- KPI Display ----
     col1, col2 = st.columns(2)
-    with col1:
-        st.metric(label="Total Sales", value=f"${total_sales:,.2f}")
-        st.metric(label="Total Profit", value=f"${total_profit:,.2f}")
-    with col2:
-        st.metric(label="Margin Rate", value=f"{(margin_rate * 100):,.2f}%")
+with col1:
+    st.metric(label="Total Sales", value=f"${total_sales:,.2f}")
+    st.metric(label="Total Profit", value=f"${total_profit:,.2f}")
+with col2:
+    st.metric(label="Margin Rate", value=f"{(margin_rate * 100):,.2f}%")
+    st.metric(label="Total Quantity Sold", value=f"{total_quantity:,}")
+
     
     # ---- Treemap Visualization ----
     st.subheader("Sales Breakdown by Category & Sub-Category")
