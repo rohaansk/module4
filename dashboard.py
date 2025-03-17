@@ -14,7 +14,6 @@ st.markdown("""
         .stMetric > div { font-size: 18px; font-weight: bold; }
         .stMultiSelect div[data-baseweb="tag"] { display: none; }
         .stMultiSelect div[data-baseweb="select"] > div { height: auto !important; }
-        .main, .block-container { background: rgba(255, 255, 255, 0.85); border-radius: 10px; padding: 20px; }
     </style>
 """, unsafe_allow_html=True)
 
@@ -27,19 +26,6 @@ def load_data():
     return df
 
 df_original = load_data()
-
-# ---- Mapping of State Names to Abbreviations ----
-state_abbreviations = {
-    "Alabama": "AL", "Alaska": "AK", "Arizona": "AZ", "Arkansas": "AR", "California": "CA", "Colorado": "CO",
-    "Connecticut": "CT", "Delaware": "DE", "Florida": "FL", "Georgia": "GA", "Hawaii": "HI", "Idaho": "ID",
-    "Illinois": "IL", "Indiana": "IN", "Iowa": "IA", "Kansas": "KS", "Kentucky": "KY", "Louisiana": "LA",
-    "Maine": "ME", "Maryland": "MD", "Massachusetts": "MA", "Michigan": "MI", "Minnesota": "MN", "Mississippi": "MS",
-    "Missouri": "MO", "Montana": "MT", "Nebraska": "NE", "Nevada": "NV", "New Hampshire": "NH", "New Jersey": "NJ",
-    "New Mexico": "NM", "New York": "NY", "North Carolina": "NC", "North Dakota": "ND", "Ohio": "OH", "Oklahoma": "OK",
-    "Oregon": "OR", "Pennsylvania": "PA", "Rhode Island": "RI", "South Carolina": "SC", "South Dakota": "SD",
-    "Tennessee": "TN", "Texas": "TX", "Utah": "UT", "Vermont": "VT", "Virginia": "VA", "Washington": "WA",
-    "West Virginia": "WV", "Wisconsin": "WI", "Wyoming": "WY"
-}
 
 # ---- Sidebar Navigation ----
 st.sidebar.title("Navigation")
@@ -93,14 +79,43 @@ if page == "📊 Business Overview":
     with col2:
         st.metric(label="Margin Rate", value=f"{(margin_rate * 100):,.2f}%")
     
-    # ---- Sales Performance by Location (Choropleth Map) ----
-    st.subheader("Sales Performance by Location")
-    location_data = df_filtered.groupby("State").agg({"Sales": "sum"}).reset_index()
-    location_data["State Abbreviation"] = location_data["State"].map(state_abbreviations)
-    location_data = location_data.dropna()
+    # ---- Treemap Visualization ----
+    st.subheader("Sales Breakdown by Category & Sub-Category")
+    treemap_fig = px.treemap(df_filtered, path=["Category", "Sub-Category"], values="Sales", title="Category Sales Breakdown")
+    st.plotly_chart(treemap_fig, use_container_width=True)
     
-    location_fig = px.choropleth(location_data, locations="State Abbreviation", locationmode="USA-states", color="Sales",
-                                 scope="usa", title="Sales by State", color_continuous_scale="Blues")
+    # ---- Top Products ----
+    top_products = df_filtered.groupby("Product Name").agg({"Sales": "sum"}).reset_index()
+    top_products = top_products.sort_values(by="Sales", ascending=False).head(5)
+    top_products["Short Name"] = top_products["Product Name"].str[:15] + "..."
+    
+    st.subheader("Top 5 Products by Sales")
+    fig_bar = px.bar(top_products, x="Sales", y="Short Name", orientation="h", color="Sales", title="Top Products", color_continuous_scale="Blues")
+    fig_bar.update_layout(yaxis={"categoryorder": "total ascending"})
+    st.plotly_chart(fig_bar, use_container_width=True)
+    
+    # ---- Sales Performance by Location ----
+    st.subheader("Sales Performance by Location")
+    location_fig = px.bar(df_filtered.groupby("State").agg({"Sales": "sum"}).reset_index(), x="Sales", y="State", orientation="h", title="Sales by State", color="Sales", color_continuous_scale="Blues")
+    location_fig.update_layout(yaxis={"categoryorder": "total ascending"})
     st.plotly_chart(location_fig, use_container_width=True)
 
+elif page == "📈 Advanced Analytics":
+    st.title("📈 Advanced Analytics")
+    
+    # ---- Profitability vs Sales Scatter Plot ----
+    st.subheader("Profit vs. Sales")
+    fig_scatter = px.scatter(df_filtered, x="Sales", y="Profit", color="Category", size="Quantity", title="Profitability vs Sales")
+    st.plotly_chart(fig_scatter, use_container_width=True)
+    
+    # ---- KPI Trend Over Time ----
+    st.subheader("KPI Trend Over Time")
+    kpi_options = ["Sales", "Quantity", "Profit", "Margin Rate"]
+    selected_kpi = st.radio("Select KPI to visualize:", options=kpi_options, horizontal=True)
+    df_grouped = df_filtered.groupby("Order Date").agg({"Sales": "sum", "Quantity": "sum", "Profit": "sum"}).reset_index()
+    df_grouped["Margin Rate"] = df_grouped["Profit"] / df_grouped["Sales"].replace(0, 1)
+    
+    fig_line = px.line(df_grouped, x="Order Date", y=selected_kpi, title=f"{selected_kpi} Over Time", labels={"Order Date": "Date", selected_kpi: selected_kpi}, template="plotly_white")
+    st.plotly_chart(fig_line, use_container_width=True)
+    
 st.success("Dashboard updated with best practices! 🚀")
