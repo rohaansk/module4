@@ -14,6 +14,7 @@ st.markdown("""
         .stMetric > div { font-size: 18px; font-weight: bold; }
         .stMultiSelect div[data-baseweb="tag"] { display: none; }
         .stMultiSelect div[data-baseweb="select"] > div { height: auto !important; }
+        .main, .block-container { background: rgba(255, 255, 255, 0.85); border-radius: 10px; padding: 20px; }
     </style>
 """, unsafe_allow_html=True)
 
