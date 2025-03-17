@@ -115,10 +115,18 @@ if page == "📊 Business Overview":
 
     
     # ---- Sales Performance by Location ----
+    # ---- Sales Performance by Location ----
     st.subheader("Sales Performance by Location")
-    location_fig = px.bar(df_filtered.groupby("State").agg({"Sales": "sum"}).reset_index(), x="Sales", y="State", orientation="h", title="Sales by State", color="Sales", color_continuous_scale="Blues")
+    location_sales = df_filtered.groupby("State").agg({"Sales": "sum", "Profit": "sum"}).reset_index()
+
+    location_fig = px.bar(location_sales, x="Sales", y="State", orientation="h", title="Sales by State",
+                      color="Sales", color_continuous_scale="Blues", custom_data=["State", "Sales", "Profit"])
+    location_fig.update_traces(hovertemplate="<b>State:</b> %{customdata[0]}<br>"
+                                         "<b>Sales:</b> $%{customdata[1]:,.2f}<br>"
+                                         "<b>Profit:</b> $%{customdata[2]:,.2f}")
     location_fig.update_layout(yaxis={"categoryorder": "total ascending"})
     st.plotly_chart(location_fig, use_container_width=True)
+
 
 elif page == "📈 Advanced Analytics":
     st.title("📈 Advanced Analytics")
