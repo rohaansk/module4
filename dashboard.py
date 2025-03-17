@@ -101,7 +101,7 @@ if not df_filtered.empty:
         st.caption(f"📉 Lowest Sales: ${lowest_sales['Sales']:,.2f} on {lowest_sales['Order Date'].strftime('%B %d, %Y')}")
     
     top_products = df_filtered.groupby("Product Name").agg({"Sales": "sum", "Quantity": "sum", "Profit": "sum"}).reset_index()
-    top_products = top_products.sort_values(by=selected_kpi, ascending=False).head(10)
+    top_products = top_products.sort_values(by=selected_kpi, ascending=False).head(5)
     top_products["Short Name"] = top_products["Product Name"].str[:15] + "..."
     
     highest_selling_product = top_products.iloc[0]["Product Name"]
@@ -109,7 +109,7 @@ if not df_filtered.empty:
     
     with col2:
         fig_bar = px.bar(top_products, x=selected_kpi, y="Short Name", orientation="h", 
-                         title=f"Top 10 Products by {selected_kpi}", color=selected_kpi,
+                         title=f"Top 5 Products by {selected_kpi}", color=selected_kpi,
                          color_continuous_scale="Blues", template="plotly_white",
                          custom_data=[top_products["Product Name"], top_products["Sales"]])
         fig_bar.update_traces(hovertemplate="<b>%{customdata[0]}</b><br>Sales: $%{customdata[1]:,.2f}")
