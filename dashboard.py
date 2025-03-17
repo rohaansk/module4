@@ -58,7 +58,6 @@ if from_date > to_date:
 df_filtered = df_filtered[(df_filtered["Order Date"] >= pd.to_datetime(from_date)) & (df_filtered["Order Date"] <= pd.to_datetime(to_date))]
 
 # ---- KPI Calculation ----
-
 total_sales = df_filtered["Sales"].sum() if not df_filtered.empty else 0
 total_quantity = df_filtered["Quantity"].sum() if not df_filtered.empty else 0
 total_profit = df_filtered["Profit"].sum() if not df_filtered.empty else 0
@@ -84,7 +83,6 @@ if not df_filtered.empty:
     df_grouped["Margin Rate"] = df_grouped["Profit"] / df_grouped["Sales"].replace(0, 1)
     
     top_product = df_filtered.groupby("Product Name")["Quantity"].sum().idxmax()
-    st.subheader(f"Best Selling Product: {top_product}")
     
     kpi_options = ["Sales", "Quantity", "Profit", "Margin Rate"]
     selected_kpi = st.radio("Select KPI to visualize:", options=kpi_options, horizontal=True)
@@ -106,7 +104,10 @@ if not df_filtered.empty:
                          title=f"Top 10 Products by {selected_kpi}", color=selected_kpi,
                          color_continuous_scale="Blues", template="plotly_white",
                          hover_name="Product Name")
-        fig_bar.update_layout(height=300, yaxis={"categoryorder": "total ascending", "showticklabels": False})
+        fig_bar.update_layout(height=300, yaxis={"categoryorder": "total ascending", "tickmode": "linear", "tickvals": list(range(10))})
         st.plotly_chart(fig_bar, use_container_width=True)
+    
+    # Display Best Selling Product Below the Bar Chart
+    st.subheader(f"Best Selling Product: {top_product}")
 
 st.success("Dashboard updated with best practices! 🚀")
