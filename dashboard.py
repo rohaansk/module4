@@ -104,6 +104,9 @@ if not df_filtered.empty:
     top_products = top_products.sort_values(by=selected_kpi, ascending=False).head(5)
     top_products["Short Name"] = top_products["Product Name"].str[:15] + "..."
     
+    highest_selling_product = top_products.iloc[0]["Product Name"]
+    lowest_selling_product = top_products.iloc[-1]["Product Name"]
+    
     with col2:
         fig_bar = px.bar(top_products, x=selected_kpi, y="Short Name", orientation="h", 
                          title=f"Top 5 Products by {selected_kpi}", color=selected_kpi,
@@ -112,5 +115,8 @@ if not df_filtered.empty:
         fig_bar.update_traces(hovertemplate="<b>%{customdata[0]}</b><br>Sales: $%{customdata[1]:,.2f}")
         fig_bar.update_layout(height=300, yaxis={"categoryorder": "total ascending"})
         st.plotly_chart(fig_bar, use_container_width=True)
+        
+        st.caption(f"🏆 Highest Selling Product: {highest_selling_product}")
+        st.caption(f"📉 Lowest Selling Product: {lowest_selling_product}")
 
 st.success("Dashboard updated with best practices! 🚀")
