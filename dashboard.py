@@ -36,9 +36,9 @@ def multiselect_with_all(label, options, default_options):
     selected_options = st.sidebar.multiselect(label, ["All"] + options, default=["All"] if set(default_options) == set(options) else default_options)
     if "All" in selected_options and len(selected_options) > 1:
         selected_options.remove("All")
-    if not selected_options:
+    elif len(selected_options) == 0:
         st.sidebar.warning(f"At least one {label.lower()} must be selected.")
-        selected_options = options
+        selected_options = ["All"]
     return options if "All" in selected_options else selected_options
 
 st.sidebar.title("Filters")
