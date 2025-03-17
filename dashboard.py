@@ -99,10 +99,20 @@ if page == "📊 Business Overview":
     top_products = top_products.sort_values(by="Sales", ascending=False).head(5)
     top_products["Short Name"] = top_products["Product Name"].str[:15] + "..."
     
+    # ---- Bar Chart Tooltip Update ----
     st.subheader("Top 5 Products by Sales")
-    fig_bar = px.bar(top_products, x="Sales", y="Short Name", orientation="h", color="Sales", title="Top Products", color_continuous_scale="Blues")
-    fig_bar.update_layout(yaxis={"categoryorder": "total ascending"})
+    top_products = df_filtered.groupby("Product Name").agg({"Sales": "sum", "Quantity": "sum", "Profit": "sum"}).reset_index()
+    top_products = top_products.sort_values(by="Sales", ascending=False).head(5)
+    top_products["Short Name"] = top_products["Product Name"].str[:15] + "..."
+
+    fig_bar = px.bar(top_products, x="Sales", y="Short Name", orientation="h", color="Sales", title="Top Products",
+                 color_continuous_scale="Blues", custom_data=["Product Name", "Sales", "Quantity", "Profit"])
+    fig_bar.update_traces(hovertemplate="<b>Product:</b> %{customdata[0]}<br>"
+                                    "<b>Sales:</b> $%{customdata[1]:,.2f}<br>"
+                                    "<b>Quantity Sold:</b> %{customdata[2]}<br>"
+                                    "<b>Profit:</b> $%{customdata[3]:,.2f}")
     st.plotly_chart(fig_bar, use_container_width=True)
+
     
     # ---- Sales Performance by Location ----
     st.subheader("Sales Performance by Location")
