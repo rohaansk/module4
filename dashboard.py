@@ -137,11 +137,18 @@ elif page == "📈 Advanced Analytics":
     st.plotly_chart(fig_scatter, use_container_width=True)
     
     # ---- KPI Trend Over Time ----
+    # ---- KPI Trend Over Time ----
     st.subheader("KPI Trend Over Time")
     kpi_options = ["Sales", "Quantity", "Profit", "Margin Rate"]
     selected_kpi = st.radio("Select KPI to visualize:", options=kpi_options, horizontal=True)
+
     df_grouped = df_filtered.groupby("Order Date").agg({"Sales": "sum", "Quantity": "sum", "Profit": "sum"}).reset_index()
     df_grouped["Margin Rate"] = df_grouped["Profit"] / df_grouped["Sales"].replace(0, 1)
-    
-    fig_line = px.line(df_grouped, x="Order Date", y=selected_kpi, title=f"{selected_kpi} Over Time", labels={"Order Date": "Date", selected_kpi: selected_kpi}, template="plotly_white")
+
+    fig_line = px.line(df_grouped, x="Order Date", y=selected_kpi, title=f"{selected_kpi} Over Time",
+                   labels={"Order Date": "Date", selected_kpi: selected_kpi}, template="plotly_white",
+                   custom_data=["Order Date", selected_kpi])
+    fig_line.update_traces(hovertemplate="<b>Date:</b> %{customdata[0]}<br>"
+                                     f"<b>{selected_kpi}:</b> $%{{customdata[1]:,.2f}}")
     st.plotly_chart(fig_line, use_container_width=True)
+
