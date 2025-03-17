@@ -94,10 +94,11 @@ if page == "📊 Business Overview":
     fig_bar.update_layout(yaxis={"categoryorder": "total ascending"})
     st.plotly_chart(fig_bar, use_container_width=True)
     
-    # ---- Sales Performance by Location ----
+    # ---- Sales Performance by Location (Choropleth Map) ----
     st.subheader("Sales Performance by Location")
-    location_fig = px.bar(df_filtered.groupby("State").agg({"Sales": "sum"}).reset_index(), x="Sales", y="State", orientation="h", title="Sales by State", color="Sales", color_continuous_scale="Blues")
-    location_fig.update_layout(yaxis={"categoryorder": "total ascending"})
+    location_data = df_filtered.groupby("State").agg({"Sales": "sum"}).reset_index()
+    location_fig = px.choropleth(location_data, locations="State", locationmode="USA-states", color="Sales",
+                                 scope="usa", title="Sales by State", color_continuous_scale="Blues")
     st.plotly_chart(location_fig, use_container_width=True)
 
 elif page == "📈 Advanced Analytics":
