@@ -32,31 +32,29 @@ st.sidebar.title("Navigation")
 page = st.sidebar.radio("Go to:", ["📊 Business Overview", "📈 Advanced Analytics"])
 
 # ---- Sidebar Filters ----
+def multiselect_with_all(label, options, default_options):
+    all_selected = "All" in default_options or set(options) == set(default_options)
+    selected_options = st.sidebar.multiselect(label, ["All"] + options, default=["All"] if all_selected else default_options)
+    return options if "All" in selected_options else selected_options
+
 st.sidebar.title("Filters")
-selected_regions = st.sidebar.multiselect("Select Region(s) (Selected: " + str(len(df_original["Region"].unique())) + ")", 
-                                          sorted(df_original["Region"].dropna().unique()), 
-                                          default=df_original["Region"].unique())
+selected_regions = multiselect_with_all("Select Region(s)", sorted(df_original["Region"].dropna().unique()), df_original["Region"].unique())
 df_filtered = df_original[df_original["Region"].isin(selected_regions)]
 
-selected_states = st.sidebar.multiselect("Select State(s) (Selected: " + str(len(df_filtered["State"].unique())) + ")", 
-                                          sorted(df_filtered["State"].dropna().unique()), 
-                                          default=df_filtered["State"].unique())
+selected_states = multiselect_with_all("Select State(s)", sorted(df_filtered["State"].dropna().unique()), df_filtered["State"].unique())
 df_filtered = df_filtered[df_filtered["State"].isin(selected_states)]
 
-selected_categories = st.sidebar.multiselect("Select Category(s) (Selected: " + str(len(df_filtered["Category"].unique())) + ")", 
-                                              sorted(df_filtered["Category"].dropna().unique()), 
-                                              default=df_filtered["Category"].unique())
+selected_categories = multiselect_with_all("Select Category(s)", sorted(df_filtered["Category"].dropna().unique()), df_filtered["Category"].unique())
 df_filtered = df_filtered[df_filtered["Category"].isin(selected_categories)]
 
-selected_subcategories = st.sidebar.multiselect("Select Sub-Category(s) (Selected: " + str(len(df_filtered["Sub-Category"].unique())) + ")", 
-                                                 sorted(df_filtered["Sub-Category"].dropna().unique()), 
-                                                 default=df_filtered["Sub-Category"].unique())
+selected_subcategories = multiselect_with_all("Select Sub-Category(s)", sorted(df_filtered["Sub-Category"].dropna().unique()), df_filtered["Sub-Category"].unique())
 df_filtered = df_filtered[df_filtered["Sub-Category"].isin(selected_subcategories)]
 
-selected_products = st.sidebar.multiselect("Select Product(s) (Selected: " + str(len(df_filtered["Product Name"].unique())) + ")", 
-                                           sorted(df_filtered["Product Name"].dropna().unique()), 
-                                           default=df_filtered["Product Name"].unique())
+selected_products = multiselect_with_all("Select Product(s)", sorted(df_filtered["Product Name"].dropna().unique()), df_filtered["Product Name"].unique())
 df_filtered = df_filtered[df_filtered["Product Name"].isin(selected_products)]
+
+if len(selected_regions) == 0 or len(selected_states) == 0 or len(selected_categories) == 0 or len(selected_subcategories) == 0 or len(selected_products) == 0:
+    st.sidebar.error("At least one option must be selected for each filter.")
 
 min_date, max_date = df_filtered["Order Date"].min(), df_filtered["Order Date"].max()
 from_date = st.sidebar.date_input("From Date", value=min_date, min_value=min_date, max_value=max_date)
