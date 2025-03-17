@@ -81,43 +81,23 @@ if page == "📊 Business Overview":
         st.metric(label="Margin Rate", value=f"{(margin_rate * 100):,.2f}%")
         st.metric(label="Total Quantity Sold", value=f"{total_quantity:,}")
 
-
-    
-    # ---- Treemap Visualization ----
+    # ---- Update Tooltips for Charts ----
+    # Treemap Tooltip Update
     st.subheader("Sales Breakdown by Category & Sub-Category")
-    treemap_fig = px.treemap(df_filtered, path=["Category", "Sub-Category"], values="Sales", title="Category Sales Breakdown")
+    treemap_fig = px.treemap(df_filtered, path=["Category", "Sub-Category"], values="Sales", title="Category Sales Breakdown",
+                             custom_data=["Category", "Sub-Category", "Sales"])
+    treemap_fig.update_traces(hovertemplate="Category: %{customdata[0]}<br>Sub-Category: %{customdata[1]}<br>Sales: $%{customdata[2]:,.2f}")
     st.plotly_chart(treemap_fig, use_container_width=True)
     
-    # ---- Top Products ----
-    top_products = df_filtered.groupby("Product Name").agg({"Sales": "sum"}).reset_index()
+    # Bar Chart Tooltip Update
+    st.subheader("Top 5 Products by Sales")
+    top_products = df_filtered.groupby("Product Name").agg({"Sales": "sum", "Quantity": "sum", "Profit": "sum"}).reset_index()
     top_products = top_products.sort_values(by="Sales", ascending=False).head(5)
     top_products["Short Name"] = top_products["Product Name"].str[:15] + "..."
     
-    st.subheader("Top 5 Products by Sales")
-    fig_bar = px.bar(top_products, x="Sales", y="Short Name", orientation="h", color="Sales", title="Top Products", color_continuous_scale="Blues")
-    fig_bar.update_layout(yaxis={"categoryorder": "total ascending"})
+    fig_bar = px.bar(top_products, x="Sales", y="Short Name", orientation="h", color="Sales", title="Top Products", 
+                     color_continuous_scale="Blues", custom_data=["Product Name", "Sales", "Quantity", "Profit"])
+    fig_bar.update_traces(hovertemplate="Product: %{customdata[0]}<br>Sales: $%{customdata[1]:,.2f}<br>Quantity Sold: %{customdata[2]}<br>Profit: $%{customdata[3]:,.2f}")
     st.plotly_chart(fig_bar, use_container_width=True)
-    
-    # ---- Sales Performance by Location ----
-    st.subheader("Sales Performance by Location")
-    location_fig = px.bar(df_filtered.groupby("State").agg({"Sales": "sum"}).reset_index(), x="Sales", y="State", orientation="h", title="Sales by State", color="Sales", color_continuous_scale="Blues")
-    location_fig.update_layout(yaxis={"categoryorder": "total ascending"})
-    st.plotly_chart(location_fig, use_container_width=True)
 
-elif page == "📈 Advanced Analytics":
-    st.title("📈 Advanced Analytics")
-    
-    # ---- Profitability vs Sales Scatter Plot ----
-    st.subheader("Profit vs. Sales")
-    fig_scatter = px.scatter(df_filtered, x="Sales", y="Profit", color="Category", size="Quantity", title="Profitability vs Sales")
-    st.plotly_chart(fig_scatter, use_container_width=True)
-    
-    # ---- KPI Trend Over Time ----
-    st.subheader("KPI Trend Over Time")
-    kpi_options = ["Sales", "Quantity", "Profit", "Margin Rate"]
-    selected_kpi = st.radio("Select KPI to visualize:", options=kpi_options, horizontal=True)
-    df_grouped = df_filtered.groupby("Order Date").agg({"Sales": "sum", "Quantity": "sum", "Profit": "sum"}).reset_index()
-    df_grouped["Margin Rate"] = df_grouped["Profit"] / df_grouped["Sales"].replace(0, 1)
-    
-    fig_line = px.line(df_grouped, x="Order Date", y=selected_kpi, title=f"{selected_kpi} Over Time", labels={"Order Date": "Date", selected_kpi: selected_kpi}, template="plotly_white")
-    st.plotly_chart(fig_line, use_container_width=True)
+st.success("Dashboard updated with best practices! 🚀")
