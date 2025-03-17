@@ -12,6 +12,7 @@ st.markdown("""
         h1, h2, h3, h4, h5, h6 { font-family: 'Roboto', sans-serif; color: #333; }
         .stRadio > label { font-size: 16px; font-weight: bold; }
         .stMetric > div { font-size: 18px; font-weight: bold; }
+        .stMultiSelect div[data-baseweb="tag"] { display: none; }
     </style>
 """, unsafe_allow_html=True)
 
@@ -31,16 +32,29 @@ page = st.sidebar.radio("Go to:", ["📊 Business Overview", "📈 Advanced Anal
 
 # ---- Sidebar Filters ----
 st.sidebar.title("Filters")
-selected_regions = st.sidebar.multiselect("Select Region(s)", sorted(df_original["Region"].dropna().unique()), default=df_original["Region"].unique())
+selected_regions = st.sidebar.multiselect("Select Region(s) (Selected: " + str(len(df_original["Region"].unique())) + ")", 
+                                          sorted(df_original["Region"].dropna().unique()), 
+                                          default=df_original["Region"].unique())
 df_filtered = df_original[df_original["Region"].isin(selected_regions)]
 
-selected_states = st.sidebar.multiselect("Select State(s)", sorted(df_filtered["State"].dropna().unique()), default=df_filtered["State"].unique())
+selected_states = st.sidebar.multiselect("Select State(s) (Selected: " + str(len(df_filtered["State"].unique())) + ")", 
+                                          sorted(df_filtered["State"].dropna().unique()), 
+                                          default=df_filtered["State"].unique())
 df_filtered = df_filtered[df_filtered["State"].isin(selected_states)]
 
-selected_categories = st.sidebar.multiselect("Select Category(s)", sorted(df_filtered["Category"].dropna().unique()), default=df_filtered["Category"].unique())
+selected_categories = st.sidebar.multiselect("Select Category(s) (Selected: " + str(len(df_filtered["Category"].unique())) + ")", 
+                                              sorted(df_filtered["Category"].dropna().unique()), 
+                                              default=df_filtered["Category"].unique())
 df_filtered = df_filtered[df_filtered["Category"].isin(selected_categories)]
 
-selected_products = st.sidebar.multiselect("Select Product(s)", sorted(df_filtered["Product Name"].dropna().unique()), default=df_filtered["Product Name"].unique())
+selected_subcategories = st.sidebar.multiselect("Select Sub-Category(s) (Selected: " + str(len(df_filtered["Sub-Category"].unique())) + ")", 
+                                                 sorted(df_filtered["Sub-Category"].dropna().unique()), 
+                                                 default=df_filtered["Sub-Category"].unique())
+df_filtered = df_filtered[df_filtered["Sub-Category"].isin(selected_subcategories)]
+
+selected_products = st.sidebar.multiselect("Select Product(s) (Selected: " + str(len(df_filtered["Product Name"].unique())) + ")", 
+                                           sorted(df_filtered["Product Name"].dropna().unique()), 
+                                           default=df_filtered["Product Name"].unique())
 df_filtered = df_filtered[df_filtered["Product Name"].isin(selected_products)]
 
 min_date, max_date = df_filtered["Order Date"].min(), df_filtered["Order Date"].max()
