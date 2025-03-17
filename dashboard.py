@@ -82,6 +82,10 @@ if not df_filtered.empty:
     df_grouped = df_filtered.groupby("Order Date").agg({"Sales": "sum", "Quantity": "sum", "Profit": "sum"}).reset_index()
     df_grouped["Margin Rate"] = df_grouped["Profit"] / df_grouped["Sales"].replace(0, 1)
     
+    # Compute Peak Sales and Lowest Sales
+    peak_sales = df_grouped.loc[df_grouped["Sales"].idxmax()]
+    lowest_sales = df_grouped.loc[df_grouped["Sales"].idxmin()]
+    
     kpi_options = ["Sales", "Quantity", "Profit", "Margin Rate"]
     selected_kpi = st.radio("Select KPI to visualize:", options=kpi_options, horizontal=True)
     
@@ -92,11 +96,16 @@ if not df_filtered.empty:
                            hover_data={"Order Date": "|%B %d, %Y", selected_kpi: ":.2f"})
         fig_line.update_layout(height=300)
         st.plotly_chart(fig_line, use_container_width=True)
+        
+        st.caption(f"📈 Peak Sales: ${peak_sales['Sales']:,.2f} on {peak_sales['Order Date'].strftime('%B %d, %Y')}")
+        st.caption(f"📉 Lowest Sales: ${lowest_sales['Sales']:,.2f} on {lowest_sales['Order Date'].strftime('%B %d, %Y')}")
     
     top_products = df_filtered.groupby("Product Name").agg({"Sales": "sum", "Quantity": "sum", "Profit": "sum"}).reset_index()
     top_products["Margin Rate"] = top_products["Profit"] / top_products["Sales"].replace(0, 1)
     top_products = top_products.sort_values(by=selected_kpi, ascending=False).head(10)
     top_products["Short Name"] = top_products["Product Name"].str[:15] + "..."
+    
+    highest_selling_product = top_products.iloc[0]["Product Name"]
     
     with col2:
         fig_bar = px.bar(top_products, x=selected_kpi, y="Short Name", orientation="h", 
@@ -105,5 +114,7 @@ if not df_filtered.empty:
                          hover_data={"Short Name": False, "Product Name": True})
         fig_bar.update_layout(height=300, yaxis={"categoryorder": "total ascending", "tickmode": "array", "tickvals": list(range(10))})
         st.plotly_chart(fig_bar, use_container_width=True)
+        
+        st.caption(f"🏆 Highest Selling Product: {highest_selling_product}")
 
 st.success("Dashboard updated with best practices! 🚀")
