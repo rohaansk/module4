@@ -58,11 +58,12 @@ if from_date > to_date:
 df_filtered = df_filtered[(df_filtered["Order Date"] >= pd.to_datetime(from_date)) & (df_filtered["Order Date"] <= pd.to_datetime(to_date))]
 
 # ---- KPI Calculation ----
-previous_sales = df_original["Sales"].sum() - total_sales if not df_original.empty else 0
+
 total_sales = df_filtered["Sales"].sum() if not df_filtered.empty else 0
 total_quantity = df_filtered["Quantity"].sum() if not df_filtered.empty else 0
 total_profit = df_filtered["Profit"].sum() if not df_filtered.empty else 0
 margin_rate = (total_profit / total_sales) if total_sales != 0 else 0
+previous_sales = df_original["Sales"].sum() - total_sales if not df_original.empty else 0
 
 st.title("Enhanced SuperStore KPI Dashboard")
 
